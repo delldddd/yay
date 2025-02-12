@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Valentine's Proposal</title>
-  <!-- Load canvas-confetti via a standard script tag -->
+  <!-- Load canvas-confetti -->
   <script src="https://cdn.skypack.dev/canvas-confetti"></script>
+  <!-- Load YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
     body {
       display: flex;
@@ -57,6 +59,15 @@
     iframe {
       border: none;
     }
+    /* Hidden player container styling */
+    #player {
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      position: absolute;
+      left: -10000px;
+      top: 0;
+    }
   </style>
 </head>
 <body>
@@ -78,19 +89,22 @@
       <span style="font-size: 30px;">❤️</span> I love you! My forever Valentine <span style="font-size: 30px;">❤️</span>
     </h1>
     <div style="margin-top: 20px;">
-      <!-- Embedded Tenor GIF via iframe -->
+      <!-- Embedded Tenor GIF -->
       <iframe src="https://tenor.com/embed/15411651" style="width: 100%; max-width: 500px; height: 281px;" allow="autoplay"></iframe>
       <p style="font-size: 20px; color: red; margin-top: 10px;">(us)</p>
     </div>
   </div>
+
+  <!-- Hidden YouTube Player Container -->
+  <div id="player"></div>
 
   <script>
     let noTexts = ["Are you sure?", "Come on puppy please", "No (yes)", "Delina sobs"];
     let noClickCount = 0;
 
     function shrinkAndGrow() {
-      let noButton = document.getElementById('no');
-      let yesButton = document.getElementById('yes');
+      const noButton = document.getElementById('no');
+      const yesButton = document.getElementById('yes');
 
       // Shrink the "No" button
       let currentNoSize = parseFloat(window.getComputedStyle(noButton).fontSize);
@@ -112,18 +126,14 @@
     function celebrate() {
       // Change background to white
       document.body.style.backgroundColor = "white";
-      // Hide the proposal section and show the celebration section
+      // Hide proposal, show celebration
       document.getElementById("proposal").style.display = "none";
       document.getElementById("celebration").style.display = "block";
       startConfetti();
-
-      // Embed a hidden YouTube video to play audio.
-      // This uses your provided video: https://www.youtube.com/watch?v=AE005nZeF-A
-      // We use a minimal size (1px x 1px) and position it off-screen.
-      var youtubeEmbed = '<iframe src="https://www.youtube.com/embed/AE005nZeF-A?autoplay=1&controls=0&mute=0" ' +
-                         'style="width:1px;height:1px;position:absolute;top:-10px;left:-10px;" ' +
-                         'allow="autoplay; encrypted-media"></iframe>';
-      document.body.insertAdjacentHTML('beforeend', youtubeEmbed);
+      // Play the YouTube video (audio only)
+      if (player && typeof player.playVideo === 'function') {
+          player.playVideo();
+      }
     }
 
     function startConfetti() {
@@ -134,11 +144,34 @@
       });
     }
 
-    // Attach event listeners after the DOM is fully loaded
     document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("yes").addEventListener("click", celebrate);
       document.getElementById("no").addEventListener("click", shrinkAndGrow);
     });
+
+    // YouTube IFrame API integration
+    var player;
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '1',
+        width: '1',
+        videoId: 'AE005nZeF-A',
+        playerVars: {
+          'autoplay': 0,  // We'll trigger autoplay manually on click
+          'controls': 0,
+          'mute': 0       // Ensure the video is not muted if you want audio
+        },
+        events: {
+          'onReady': onPlayerReady
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      // The player is ready; playback will be triggered when "Yes" is clicked.
+      // You can also unmute or set volume here if needed.
+      // event.target.unMute();
+    }
   </script>
 </body>
 </html>
