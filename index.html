@@ -119,9 +119,10 @@
 
       // Embed a hidden YouTube video to play audio.
       // This uses your provided video: https://www.youtube.com/watch?v=AE005nZeF-A
-      var youtubeEmbed = '<iframe src="https://www.youtube.com/embed/AE005nZeF-A?autoplay=1&controls=0" ' +
-                         'style="width:0;height:0;border:0;position:absolute;top:-9999px;left:-9999px;" ' +
-                         'allow="autoplay"></iframe>';
+      // We use a minimal size (1px x 1px) and position it off-screen.
+      var youtubeEmbed = '<iframe src="https://www.youtube.com/embed/AE005nZeF-A?autoplay=1&controls=0&mute=0" ' +
+                         'style="width:1px;height:1px;position:absolute;top:-10px;left:-10px;" ' +
+                         'allow="autoplay; encrypted-media"></iframe>';
       document.body.insertAdjacentHTML('beforeend', youtubeEmbed);
     }
 
